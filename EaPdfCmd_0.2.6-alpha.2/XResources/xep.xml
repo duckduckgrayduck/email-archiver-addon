@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- ======================================================= -->
+<!-- RenderX XEP Configuration                               -->
+<!-- ======================================================= -->
+
+<config xmlns="http://www.renderx.com/XEP/config">
+
+	<!-- ======================================================= -->
+	<!-- Formatter options                                       -->
+	<!-- ======================================================= -->
+	<options>
+		<option name="LICENSE" value="xep_license.xml"/>
+		<option name="TMPDIR" value="none"/>
+		<option name="BROKENIMAGE" value="images/404.gif"/>
+		<option name="LOGO" value="images/logo-renderx.svg"/>
+		<option name="STAMP_PNG" value="images/stamp-renderx.png"/>
+		<option name="ROLE_MAP" value="rolemap.xml"/>
+		<option name="ENABLE_ACCESSIBILITY" value="true"/>
+
+		<option name="STRICTNESS" value="1"/>
+		<!-- 0 relaxed, 1 normal, 2 strict -->
+
+		<!-- Backend options -->
+		<generator-options format="PDF">
+			<option name="COMPRESS" value="false"/><!-- false for debugging -->
+			<option name="DROP_UNUSED_DESTINATIONS" value="false"/><!-- must be false so that DPart logic works to find start and end pages of a message -->
+
+			<!-- Set to PDF/A-3a.  XEP does not support any higher PDF version than 1.4 if using PDF/A-3. The version and PDF/A levels can be overridden in the XMP metadata during post-processing .-->
+			<option name="PDF_VERSION" value="1.4"/>
+			<option name="PDF_A" value="pdf-a-3a"/>
+		</generator-options>
+
+	</options>
+
+	<!-- ======================================================= -->
+	<!-- Fonts                                                   -->
+	<!-- ======================================================= -->
+	<fonts default-family="Kurinto Text">
+		<font-group xml:base="../Fonts/" label="Fonts" embed="true" subset="true" initial-encoding="standard">
+			<font-family name="Traditional Arabic">
+				<font>
+					<font-data ttf="C:/WINDOWS/FONTS/TRADO.ttf" />
+				</font>
+				<font weight="bold">
+					<font-data ttf="C:/WINDOWS/FONTS/TRADBDO.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Simplified Arabic">
+				<font>
+					<font-data ttf="C:/WINDOWS/FONTS/SIMPO.ttf" />
+				</font>
+				<font weight="bold">
+					<font-data ttf="C:/WINDOWS/FONTS/SIMPBDO.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Simplified Arabic Fixed">
+				<font>
+					<font-data ttf="C:/WINDOWS/FONTS/SIMPFXO.ttf" />
+				</font>
+			</font-family>
+
+			<font-family name="Kurinto Mono">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts\KurintoMono-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts\KurintoMono-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts\KurintoMono-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts\KurintoMono-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Sans">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts\KurintoSans-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts\KurintoSans-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts\KurintoSans-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts\KurintoSans-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Text">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts\KurintoText-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts\KurintoText-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts\KurintoText-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts\KurintoText-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Mono CJK">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoCJK-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoCJK-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoCJK-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoCJK-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Mono HK">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoHK-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoHK-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoHK-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoHK-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Mono JP">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoJP-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoJP-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoJP-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoJP-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Mono KR">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoKR-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoKR-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoKR-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoKR-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Mono SC">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoSC-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoSC-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoSC-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoSC-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Mono TC">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoTC-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoTC-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoTC-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoMonoTC-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Sans CJK">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansCJK-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansCJK-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansCJK-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansCJK-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Sans HK">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansHK-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansHK-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansHK-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansHK-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Sans JP">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansJP-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansJP-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansJP-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansJP-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Sans KM">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansKM-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansKM-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansKM-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansKM-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Sans KR">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansKR-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansKR-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansKR-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansKR-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Sans SC">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansSC-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansSC-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansSC-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansSC-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Sans TB">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansTB-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansTB-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansTB-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansTB-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Sans TC">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansTC-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansTC-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansTC-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoSansTC-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Text CJK">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextCJK-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextCJK-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextCJK-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextCJK-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Text HK">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextHK-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextHK-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextHK-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextHK-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Text JP">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextJP-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextJP-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextJP-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextJP-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Text KM">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextKM-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextKM-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextKM-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextKM-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Text KR">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextKR-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextKR-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextKR-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextKR-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Text SC">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextSC-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextSC-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextSC-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextSC-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Text TB">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextTB-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextTB-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextTB-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextTB-Rg.ttf" />
+				</font>
+			</font-family>
+			<font-family name="Kurinto Text TC">
+				<font weight="bold">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextTC-Bd.ttf" />
+				</font>
+				<font weight="bold" style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextTC-BdIt.ttf" />
+				</font>
+				<font style="italic">
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextTC-It.ttf" />
+				</font>
+				<font>
+					<font-data ttf="Kurinto\Fonts_Lang\KurintoTextTC-Rg.ttf" />
+				</font>
+			</font-family>
+		</font-group>
+		
+		<font-alias name="serif" value="Kurinto Text" />
+		<font-alias name="Times" value="Kurinto Text" />
+		<font-alias name="Times Roman" value="Kurinto Text" />
+		<font-alias name="Times New Roman" value="Kurinto Text" />
+		<font-alias name="Times-Roman" value="Kurinto Text" />
+		
+		<font-alias name="sans-serif" value="Kurinto Sans" />
+		<font-alias name="Helvetica" value="Kurinto Sans" />
+		<font-alias name="Arial" value="Kurinto Sans" />
+		<font-alias name="SansSerif" value="Kurinto Sans" />
+		
+		<font-alias name="monospace" value="Kurinto Mono" />
+		<font-alias name="Courier" value="Kurinto Mono" />
+		<font-alias name="Courier New" value="Kurinto Mono" />
+		<font-alias name="Monospaced" value="Kurinto Mono" />
+	</fonts>
+	
+	<!-- ======================================================= -->
+	<!-- Language-specific data: hyphenation, line breaking, etc -->
+	<!-- ======================================================= -->
+	<languages default-language="en-US" xml:base="hyphen/">
+
+		<language name="English (US)" codes="none en-US eng-US">
+			<hyphenation pattern="hyphen.tex"/>
+		</language>
+
+		<language name="English (UK)" codes="en-GB eng-GB en eng">
+			<hyphenation pattern="ukhyphen.tex"/>
+		</language>
+
+		<language name="Russian" codes="ru rus">
+			<hyphenation pattern="ruhyphal.tex" encoding="koi8-r"/>
+		</language>
+
+		<language name="French" codes="fr fra fre">
+			<hyphenation pattern="frhyph_rx.tex"/>
+		</language>
+
+		<language name="German" codes="de deu ger">
+			<hyphenation pattern="dehyph_rx.tex"/>
+		</language>
+
+		<language name="Spanish" codes="es esl spa">
+			<hyphenation pattern="eshyph_rx.tex"/>
+		</language>
+
+		<language name="Polish" codes="pl pol">
+			<hyphenation pattern="plhyph_rx.tex"/>
+		</language>
+
+	</languages>
+
+</config>

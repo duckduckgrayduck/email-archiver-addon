@@ -1,0 +1,1122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--TODO: Need to find permanent external URL for this XSD -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:xm="https://github.com/StateArchivesOfNorthCarolina/tomes-eaxs-2"
+	targetNamespace="https://github.com/StateArchivesOfNorthCarolina/tomes-eaxs-2"
+	xmlns:xhtml="http://www.w3.org/1999/xhtml"
+	elementFormDefault="qualified">
+
+	<annotation>
+		<documentation>This is a modification of the original XML Schema located here:  https://github.com/StateArchivesOfNorthCarolina/tomes-eaxs</documentation>
+		<documentation>Modified by Tom Habing (TGH), thabing@illinois.edu, for the IMLS-funded "Email Archiving in PDF: From Initial Specification to Community of Practice" project.  See the change log below:</documentation>
+		<documentation>
+			CHANGE LOG
+			=========
+			2022-04-09
+			* Rename element SingleBody/DispositionParams to SingleBody/DispositionParam (not plural) to match the name in MultiBody element; just for consistency
+			* Added SingleBody/Disposition element; I think the MIME specs require this
+
+			2022-05-25
+			* Made BodyContent a valid root-level element for use when wrapping external content in XML
+
+			2022-06-10
+			* Added an IsAttachment boolean attribute to the SingleBody and MultiBody elements to easily indicate whether the body is an attachment or not
+			* Added the value UNKNOWN to the eol-type enumeration; in some error situations this might not be known when I serialize the message, often just a commented error message in the XML
+
+			2022-10-17
+			* Some child messages might indicate they are multipart, but the parts are deliberately empty, such as 'text/rfc822-headers', so added a new element 'MissingBody' to the schema
+			* A DeliveryStatus element was added to support the message/delivery-status content-type that contains a delivery status message, see RFC 3464.
+			DeliveryStatus segregates the per-message and per-recipient parts, but the specific fields are just serialized as generic name/value pairs using the header-type
+
+			2022-11-28
+			* Modified the From, Sender, To, Cc, and Bcc so that the name and address are separate attributes, rather than a single string; the string content is the same as before
+
+			2022-11-29
+			* Made changes to accomodate situations where the From, To, Cc, and Bcc elements are used to represent a group of recipients, rather than a single recipient
+			See https://www.rfc-editor.org/rfc/rfc5322#section-3.4, group-list
+
+			2022-11-30
+			* Everyplace where the Hash element is used, added a new element Size, to record the count of bytes of the hashed file or stream
+
+			2022-12-01
+			* Added a new element, 'ContentLanguage', to make it easier to access this value for PDF creation
+
+			2022-12-08
+			* SingleBody BodyContent may now contain a choice of either Content or ContentAsXhtml.  ContentAsXhtml is a new element that contains the XHTML content of the body, which is useful for PDF creation
+
+			2023-01-19
+			* Add a FileExt element to Mbox.  This is the extension to be used for the source filename.  It should match the actual extension used on the source filename, of it the source filename doesn't have an actual extension, it should be whatever matches the file type
+			This is used whenever a filename needs to be constructed for the file, such as if the file hash is used as a filename.  It must not include the leading period.
+
+			2023-04-13
+			* Replace the Mbox element with a MessageFileProperties element that contains the same elements, but now this new element can be used at either the folder level for MBOX files or the message level for EML files; it will contain several of the elements at the
+			message level used for describing file properties
+
+			2023-04-18
+			* Added new Headers element as the wrapper parent for all Header elements, to make it easier to navigate through the XML
+
+			2023-04-27
+			* Added a new element, 'MessageCount', to to the MessageFileProperties element to record the number of valid messages in the file
+			* Renamed the MessageFileProperties at the folder level to FolderProperties, and renamed the MessageFileProperties at the message level to MessageProperties
+			mostly just to make it easier to read the XML at a glance
+			
+			2023-05-03
+			* Add SAA DACS metadata to the metadata at the account level and the folder level
+			
+			2023-09-27
+			* Added ContentType to file-props-type to record the MIME type of the message source files
+			
+			2023-12-12
+			* Added image/width and image/height *BodyContent; image sizes can useful when rendering to PDF pages
+
+		</documentation>
+	</annotation>
+
+	<import namespace="http://www.w3.org/1999/xhtml" schemaLocation="eaxs_xhtml_mini.xsd" />
+	<!-- minimal xhtml schema only requires html, head, and body elements -->
+
+	<include schemaLocation="CountryCodes.xsd" />
+	
+	<element name="BodyContent" type="xm:int-body-content-type">
+		<annotation>
+			<documentation>
+				This is the root element used when external content is wrapped in XML
+			</documentation>
+		</annotation>
+	</element>
+
+	<element name="Account">
+		<complexType>
+			<sequence>
+				<element name="EmailAddress" type="string" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="GlobalId" type="anyURI">
+					<annotation>
+						<documentation>Globally unique, permanent, absolute URI with no fragment conforming to the canonical form specified in RFC2396 as amended by RFC2732. This value once assigned must never be changed.</documentation>
+						<documentation>Handles from the Handle System could be used but they must not contain the # character.</documentation>
+						<documentation>Handles should be expressed as an URI with the syntax hdl:&lt;handle&gt; or urn:&lt;handle&gt;. This form simply specifies the raw handle and does not make any reference to a handle resolver.</documentation>
+						<documentation>All messages and their child messages contained in this account can be identified globally using this GlobalId and appending the LocalId as a fragment(GlobalId#LocalId).</documentation>
+					</annotation>
+				</element>
+				<element name="ReferencesAccount" type="xm:ref-account-type" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="Folder" type="xm:folder-type" minOccurs="0" maxOccurs="unbounded"/>
+				<element name="DACS" type="xm:dacs-type" minOccurs="0" maxOccurs="1">
+					<annotation>
+						<documentation>
+							Archival description of the email account using elements from the "Describing Archives: A Content Standard" (DACS) maintained by the Society of American Archivists (SAA).
+							For details see https://saa-ts-dacs.github.io/dacs/.  This schema includes all the 'multilevel optimum' elements described in the DACS.										
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	
+	<complexType name="dacs-type">
+		<annotation>
+			<documentation>
+				Elements from the "Describing Archives: A Content Standard" (DACS) maintained by the Society of American Archivists (SAA). For
+				details see https://saa-ts-dacs.github.io/dacs/.  This schema includes all the 'multilevel optimum' elements described in the DACS.				
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="ReferenceCode" type="xm:dacs-reference-code" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element provides a unique identifier for the unit being described. The identifier may consist of three subelements: a local identifier, a code for the repository, and a code for the country.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Repository" type="string" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element identifies the name and location of the repository that holds the materials being described.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Title" type="string" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element provides a word or phrase by which the material being described is known or can be identified.
+						A title may be devised or formal.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="DateCreatedEarliest" type="dateTime" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element identifies and records the date of the earliest email in the unit.
+						For PDF/mail this is an internal property and should be derived from the origination date of the
+						earliest message contained at this level in the document.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="DateCreatedLatest" type="dateTime" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element identifies and records the date of the latest email in the unit.
+						For PDF/mail this is an internal property and should be derived from the origination date of the
+						latest message contained at this level in the document.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Extent" type="string" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element indicates the extent and the physical nature of the materials being described. This is handled in two parts,
+						a number (quantity) and an expression of the extent or material type. For an email archive these can be the number of emails
+						and attachments contained in the account or folder, and may include the total size in bytes.  For PDF/mail this is an internal property
+						and should be derived from the messages contained at this level in the document.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Creator" type="xm:address" minOccurs="1" maxOccurs="unbounded">
+				<annotation>
+					<documentation>
+						This element identifies the corporate bodies, persons, and families associated with the creation, assembly, accumulation,
+						and/or maintenance and use of the materials being described so that they might be appropriately documented and used to
+						create access points by which users can search for and retrieve descriptive records.  For PDF/mail this will be the owner(s)
+						of the email account identified by a name and email address.						
+					</documentation>
+				</annotation>
+			</element>
+			<element name="ScopeAndContent" type="string" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element provides information about the nature of the materials and activities reflected in the unit being described to
+						enable users to judge its potential relevance.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="ConditionsGoverningAccess" type="string" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element provides information about access restrictions due to the nature of the information in the materials being described,
+						such as those imposed by the donor, by the repository, or by statutory/regulatory requirements.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="LanguagesAndScripts" type="string" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element identifies the language(s), script(s), and symbol systems employed in the materials being described, particularly as
+						they may affect its use.  For PDF/mail this could be automatically derived from the message and MIME properties of the messages
+						contained at this level in the document, such as Content-Type, Content-Disposition, Content-Language, etc.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="RightsStatement" type="string" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element identifies the conditions under which the archival description itself is available for use and reuse.
+						Repositories should establish a consistent policy about the rights granted.
+					</documentation>
+				</annotation>
+			</element>
+			
+			<element name="AdministrativeBiographicalHistory" type="string" minOccurs="0" maxOccurs="1">
+				<annotation>
+					<documentation>
+						The purpose of this element is to describe the required elements of a biographical or administrative history note
+						about creators embedded in the description of materials. The administrative/biographical history provides relevant
+						information about corporate bodies, persons, or families who are identified using the Name of Creator(s) Element
+						and who therefore function as nominal access points. This element also describes the relationship of creators to
+						archival materials by providing information about the context in which those materials were created.  This is an
+						optional element.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="CustodialHistory" type="string" minOccurs="0" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element provides information on changes of ownership or custody of the material being described, from the time
+						it left the possession of the creator until it was acquired by the repository, that is significant for its authenticity,
+						integrity, and interpretation.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="ImmediateSourceOfAcquisition" type="string" minOccurs="0" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This element identifies the source from which the repository directly acquired the materials being described, as well as the
+						date of acquisition, the method of acquisition, and other relevant information.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	
+	<complexType name="dacs-reference-code">
+		<sequence>
+			<element name="LocalIdentifier" type="token" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						This typically alphanumeric identifier frequently serves as a succinct local means of referring to the materials.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="RepositoryCode" type="token" minOccurs="0" maxOccurs="1">
+				<annotation>
+					<documentation>
+						When delivering a descriptive record outside of the repository holding the materials, this element should contain a nationally sanctioned code for the repository.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="CountryCode" type="xm:iso-3166-1-code" minOccurs="0" maxOccurs="1">
+				<annotation>
+					<documentation>
+						When delivering a descriptive record outside of the repository holding the materials, this element should contain an internationally standardized code for
+						the country in which the repository is located.  This schema allows the use of an ISO-3166-1, alpha-2, alpha-3, or numeric-3 country code.  One of these
+						three options should be used consistently throughout the records.
+					</documentation>
+				</annotation>
+			</element>			
+		</sequence>
+	</complexType>
+
+	<complexType name="ref-account-type">
+		<sequence>
+			<element name="Href" type="anyURI">
+				<annotation>
+					<documentation>
+						This should be identical to the GlobalId of the XML file for the target account.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="EmailAddress" type="string" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="RefType" type="xm:account-ref-type"/>
+		</sequence>
+	</complexType>
+
+	<simpleType name="account-ref-type">
+		<restriction base="string">
+			<enumeration value="PreviousContent">
+				<annotation>
+					<documentation>
+						The target contains previously archived messages from the same logical account as messages found here."
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="SubsequentContent">
+				<annotation>
+					<documentation>
+						The target contains messages subsequently archived from the same logical account as messages found here.
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="Supplemental">
+				<annotation>
+					<documentation>
+						The target contains messages that should be logically included with the messages found here.
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="SeeAlso">
+				<annotation>
+					<documentation>
+						The target contains messages from some other account that may be of interest.
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="SeeInstead">
+				<annotation>
+					<documentation>
+						Content found here is superseded entirely by the messages found in the target.
+					</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="folder-type">
+		<sequence>
+			<element name="Name" type="string"/>
+			<element name="Message" type="xm:message-type" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Folder" type="xm:folder-type" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="FolderProperties" type="xm:file-props-type" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH 2023-04-13
+						If all the messages in this folder originated from a single file, usually an mbox file,
+						this element will contain some of the useful properties of that file.
+					</documentation>
+					<documentation>
+						All of the messages in the archive that belong to this folder of this account are
+						stored in an mbox file. This mbox file must use the mboxrd format and must use
+						the end-of-line markers specified in the Eol child element of this FolderProperties element.
+						Each message contained here must be use the RFC 2822 format as it would exist as
+						it was sent over the wire.
+					</documentation>
+					<documentation>
+						Individual messages may be retrieved from an mbox file
+						by searching for the desired message using the message-id. For messages
+						that do not have a message-id, the referrer must create an index to the mbox file by
+						creating a hash for each message. Once this index has been created, the
+						hash stored along with the message in this file can be used to locate the
+						original message.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="DACS" type="xm:dacs-type" minOccurs="0" maxOccurs="1">
+				<annotation>
+					<documentation>
+						Archival description of the folder using elements from the "Describing Archives: A Content Standard" (DACS) maintained by the Society of American Archivists (SAA).
+						For details see https://saa-ts-dacs.github.io/dacs/.  This schema includes all the 'multilevel optimum' elements described in the DACS. Missing element values will
+						inherit values from either the higher level folder or from the account level.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="message-type">
+		<annotation>
+			<documentation>This serves to define a single RFC2822 Message.</documentation>
+		</annotation>
+		<sequence>
+			<element name="RelPath" type="anyURI" minOccurs="0">
+				<annotation>
+					<documentation>URI component that when added to the path from which this XML document was accessed gives the URI for the root folder for which external body parts may be accessed. If not given "." is assumed.</documentation>
+				</annotation>
+			</element>
+			<!-- TODO: Instead of using long for the LocalId, we should use the XML id data type -->
+			<element name="LocalId" type="long"/>
+			<element name="Guid" type="string" />
+			<element name="MessageId" type="xm:message-id-type"/>
+			<element name="MimeVersion" type="string" minOccurs="0">
+				<annotation>
+					<documentation>If not present then it is assumed that this message did not use any mime extensions.</documentation>
+				</annotation>
+			</element>
+			<group ref="xm:message-headers"/>
+			<element name="Headers">
+				<annotation>
+					<documentation>
+						All header values found in the message should be placed here.
+						Even those used to populate the contents of the standard messages headers.
+						The minimum amount of transformation should be preformed on the original values.
+						Any encoded words (as per RFC 2047) should be left as-is and not converted to Unicode.
+					</documentation>
+					<documentation>
+						TGH 2023-04-18 Added the Headers element to the schema to hold all the headers found in the message.
+					</documentation>
+				</annotation>
+				<complexType>
+					<sequence>
+						<element name="Header" type="xm:header-type" minOccurs="0" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="StatusFlag" type="xm:message-status-flag" minOccurs="0" maxOccurs="unbounded"/>
+
+			<choice minOccurs="0">
+				<element name="SingleBody" type="xm:single-body-type"/>
+				<element name="MultiBody" type="xm:multi-body-type"/>
+			</choice>
+
+			<element name="Incomplete" type="xm:incomplete-parse-type" minOccurs="0"
+				maxOccurs="unbounded"/>
+			<element name="MessageProperties" type="xm:file-props-type" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH 2023-04-13
+						If this message originated from a single file, usually an EML file,
+						this element will contain some of the useful properties of that file.
+
+						If the message originated from an aggregate file, like an mbox, this
+						element will still contain some properties like Eol, Hash, or Size that apply to just this
+						message if it was treated as a single file.
+					</documentation>
+				</annotation>
+			</element>
+
+		</sequence>
+	</complexType>
+
+	<complexType name="message-id-type">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="Supplied" type="boolean" use="optional" default="false"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="single-body-type">
+		<sequence>
+			<annotation>
+				<documentation>The CharSet, ContentName, ContentTypeComments, and ContentTypeParams are all part of the Content-Type header, and none should be present if the Content-Type header is not present.</documentation>
+			</annotation>
+			<element name="ContentType" type="string" minOccurs="0">
+				<annotation>
+					<documentation>This is just the MIME type / MIME sub type. If not present then text/plain is assumed.</documentation>
+				</annotation>
+			</element>
+			<element name="Charset" type="string" minOccurs="0">
+				<annotation>
+					<documentation>If not present, then US-ASCII is assumed.</documentation>
+					<documentation>This is the character set originally used to encode the content of this multi-part body.</documentation>
+				</annotation>
+			</element>
+			<element name="ContentName" type="string" minOccurs="0"/>
+			<element name="ContentTypeComments" type="string" minOccurs="0"/>
+			<element name="ContentTypeParam" type="xm:parameter-type" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Any other parameter found in the Content-Type header field except for id and name.</documentation>
+				</annotation>
+			</element>
+
+			<element name="TransferEncoding" type="string" minOccurs="0">
+				<annotation>
+					<documentation>If not present, "7-bit" is assumed.</documentation>
+				</annotation>
+			</element>
+			<element name="TransferEncodingComments" type="string" minOccurs="0"/>
+
+			<element name="ContentId" type="string" minOccurs="0"/>
+			<element name="ContentIdComments" type="string" minOccurs="0"/>
+
+			<element name="Description" type="string" minOccurs="0"/>
+			<element name="DescriptionComments" type="string" minOccurs="0"/>
+
+
+			<element name="Disposition" type="string" minOccurs="0"/>
+			<element name="DispositionFileName" type="string" minOccurs="0"/>
+			<element name="DispositionComments" type="string" minOccurs="0"/>
+			<element name="DispositionParam" type="xm:parameter-type" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Any other parameter found in the Content-Disposition header field except for filename.</documentation>
+				</annotation>
+			</element>
+
+			<element name="ContentLanguage" type="string" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>TGH 2022-12-01 Content-Language header field.</documentation>
+				</annotation>
+			</element>
+
+			<element name="OtherMimeHeader" type="xm:header-type" minOccurs="0" maxOccurs="unbounded"/>
+
+			<choice minOccurs="0" maxOccurs="1">
+				<element name="BodyContent" type="xm:int-body-content-type">
+					<annotation>
+						<documentation>
+							This is textual or binary data that is stored in-line in this XML document
+							that makes up the body of this entity.
+							Along with the character set and transfer encoding used.
+						</documentation>
+					</annotation>
+				</element>
+				<element name="ExtBodyContent" type="xm:ext-body-content-type">
+					<annotation>
+						<documentation>
+							This is a pointer to a file that contains the text or binary data
+							that makes up the body of this entity.
+							Along with the character set and transfer encoding used.
+						</documentation>
+					</annotation>
+				</element>
+				<element name="ChildMessage" type="xm:child-message-type"/>
+				<element name="DeliveryStatus" type="xm:delivery-status-message-type">
+					<annotation>
+						<documentation>
+							TGH 2022-10-17 This represents a message/delivery-status part that contains a delivery status message, see RFC 3464.
+						</documentation>
+					</annotation>
+				</element>
+			</choice>
+
+			<element name="PhantomBody" type="string" minOccurs="0">
+				<annotation>
+					<documentation>Used for Content-Type message/external-body. US-ASCII character set is assumed.</documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="IsAttachment" type="boolean" use="optional">
+			<annotation>
+				<documentation>TGH_2022-06-10: A quick way to determine whether the content should be treated as an attachment or not</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="delivery-status-message-type">
+		<sequence>
+			<element name="MessageFields" minOccurs="1" maxOccurs="1">
+				<complexType>
+					<sequence>
+						<element name="Field" type="xm:header-type" minOccurs="1" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+			<element name="RecipientFields" minOccurs="1" maxOccurs="unbounded">
+				<complexType>
+					<sequence>
+						<element name="Field" type="xm:header-type" minOccurs="1" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="multi-body-type">
+		<sequence>
+			<annotation>
+				<documentation>The Charset, ContentName, ContentTypeComments, and ContentTypeParams are all part of the Content-Type header, and none should be present if the Content-Type header is not present.</documentation>
+			</annotation>
+			<element name="ContentType" type="string" minOccurs="0">
+				<annotation>
+					<documentation>This is just the MIME type / MIME sub type. If not present then text/plain is assumed.</documentation>
+				</annotation>
+			</element>
+			<element name="Charset" type="string" minOccurs="0">
+				<annotation>
+					<documentation>If not present, then US-ASCII is assumed.</documentation>
+					<documentation>This is the character set originally used to encode the content of this multi-part body.</documentation>
+				</annotation>
+			</element>
+			<element name="ContentName" type="string" minOccurs="0"/>
+			<element name="BoundaryString" type="string"/>
+			<element name="ContentTypeComments" type="string" minOccurs="0"/>
+			<element name="ContentTypeParam" type="xm:parameter-type" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Any other parameter found in the Content-Type header field except for id, name, and boundary string.</documentation>
+				</annotation>
+			</element>
+
+			<element name="TransferEncoding" type="string" minOccurs="0">
+				<annotation>
+					<documentation>If not present, "7-bit" is assumed.</documentation>
+				</annotation>
+			</element>
+			<element name="TransferEncodingComments" type="string" minOccurs="0"/>
+
+			<element name="ContentId" type="string" minOccurs="0"/>
+			<element name="ContentIdComments" type="string" minOccurs="0"/>
+
+			<element name="Description" type="string" minOccurs="0"/>
+			<element name="DescriptionComments" type="string" minOccurs="0"/>
+
+			<element name="Disposition" type="string" minOccurs="0"/>
+			<element name="DispositionFileName" type="string" minOccurs="0"/>
+			<element name="DispositionComments" type="string" minOccurs="0"/>
+			<element name="DispositionParam" type="xm:parameter-type" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Any other parameters found in the Content-Disposition header field except for filename.</documentation>
+				</annotation>
+			</element>
+
+			<element name="ContentLanguage" type="string" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>TGH 2022-12-01 Content-Language header field.</documentation>
+				</annotation>
+			</element>
+
+			<element name="OtherMimeHeader" type="xm:header-type" minOccurs="0" maxOccurs="unbounded"/>
+
+			<element name="Preamble" type="string" minOccurs="0"/>
+			<choice maxOccurs="unbounded">
+				<element name="SingleBody" type="xm:single-body-type"/>
+				<element name="MultiBody" type="xm:multi-body-type"/>
+				<element name="MissingBody">
+					<annotation>
+						<documentation>TGH 2022-10-17 Some messages might indicate they are multipart, but the parts are deliberately empty, such as 'text/rfc822-headers', so added a new element 'MissingBody' to the schema</documentation>
+					</annotation>
+				</element>
+			</choice>
+			<element name="Epilogue" type="string" minOccurs="0"/>
+		</sequence>
+		<attribute name="IsAttachment" type="boolean" use="optional">
+			<annotation>
+				<documentation>TGH_2022-06-10: A quick way to determine whether the content should be treated as an attachment or not</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="child-message-type">
+		<sequence>
+			<!-- TODO: Instead of using long for the LocalId, we should use the XML id data type -->
+			<element name="LocalId" type="long"/>
+			<element name="Guid" type="string" />
+			<element name="MessageId" type="xm:message-id-type"/>
+			<element name="MimeVersion" type="string" minOccurs="0">
+				<annotation>
+					<documentation>If not present then it is assumed that this message did not use any mime extensions.</documentation>
+				</annotation>
+			</element>
+			<group ref="xm:message-headers"/>
+			<element name="Headers">
+				<annotation>
+					<documentation>
+						All header values found in the message should be placed here.
+						Even those used to populate the contents of the standard messages headers.
+						The minimum amount of transformation should be preformed on the original values.
+						Any encoded words (as per RFC 2047) should be left as-is and not converted to Unicode.
+					</documentation>
+					<documentation>
+						TGH 2023-04-18 Added the Headers element to the schema to hold all the headers found in the message.
+					</documentation>
+				</annotation>
+				<complexType>
+					<sequence>
+						<element name="Header" type="xm:header-type" minOccurs="0" maxOccurs="unbounded"/>
+					</sequence>
+				</complexType>
+			</element>
+
+			<choice minOccurs="0">
+				<element name="SingleBody" type="xm:single-body-type"/>
+				<element name="MultiBody" type="xm:multi-body-type"/>
+			</choice>
+
+			<element name="Incomplete" type="xm:incomplete-parse-type" minOccurs="0"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="int-body-content-type">
+		<sequence>
+			<choice>
+				<annotation>
+					<documentation>
+						TGH 2022-12-08 The content may be saved as either a string or an xhtml document.
+						The xhtml would be created during processing to make it easier to the message rendering during later processing.
+					</documentation>
+				</annotation>
+				<element name="Content" type="string">
+					<annotation>
+						<documentation>
+							Content here is either wrapped in a CDATA section where all occurrences of ]]&gt; have been escaped as "]]&amp;gt;
+							or without being wrapped in a CDATA section where all occurrences of &lt; and &amp; have been escaped as &amp;lt; and &amp;amp;
+							respectively as well as all occurrences of ]]&gt; have been escaped as "]]&amp;gt.
+						</documentation>
+					</annotation>
+				</element>
+				<element name="ContentAsXhtml">
+					<annotation>
+						<documentation>
+							This must be well-formed xhtml and it should start with an html root element
+						</documentation>
+					</annotation>
+					<complexType>
+						<sequence minOccurs="1" maxOccurs="1">
+							<element ref="xhtml:html" minOccurs="1" maxOccurs="1"/>
+						</sequence>
+					</complexType>
+				</element>
+			</choice>
+			<element name="CharSet" type="string" minOccurs="0">
+				<annotation>
+					<documentation>
+						The character encoding that was used when preparing
+						the contents of this internal body part.
+						If not present then the character encoding
+						specified by the "encoding" element in the prologue of this XML document is assumed.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="TransferEncoding" type="string" minOccurs="0">
+				<annotation>
+					<documentation>
+						If not present, then it is assumed that this is not necessary
+						since it is implied by the "encoding" element in the prologue of this XML document.
+					</documentation>
+				</annotation>
+			</element>
+			<!-- Added Hash and Size because these attributes can also be useful even when the content is embedded inside the XML -->
+			<element name="Hash" type="xm:hash-type" minOccurs="0"/>
+			<element name="Size" type="long" minOccurs="0"/>
+			<element name="ImageProperties" type="xm:image-props" minOccurs="0"/>
+		</sequence>
+	</complexType>
+	
+	<complexType name="image-props">
+		<annotation>
+			<documentation>
+				TGH 2023-12-12 Width and Height of images in pixels
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="Width" type="long"/>
+			<element name="Height" type="long" />
+		</sequence>
+	</complexType>
+  
+	<complexType name="ext-body-content-type">
+		<sequence>
+			<element name="RelPath" type="anyURI">
+				<annotation>
+					<documentation>
+						Path component that when added to the result obtained from adding the RelPath
+						for this message to the absolute path from which this XML file was accessed
+						gives the path to the externally stored body part.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="CharSet" type="string" minOccurs="0">
+				<annotation>
+					<documentation>
+						The character encoding that was used when preparing
+						the contents of this external body part.
+						If not present then the original character encoding
+						specified by the "Charset" element of the containing SingleBody
+						element is assumed.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="TransferEncoding" type="string" minOccurs="0">
+				<annotation>
+					<documentation>
+						The transfer encoding that was used when preparing
+						the contents of this external body part.
+						If not present then the original character encoding
+						specified by the "TransferEncoding" element of the containing SingleBody
+						element is assumed.
+					</documentation>
+				</annotation>
+			</element>
+			<!-- TODO: Instead of using long for the LocalId, we should use the XML id data type -->
+			<element name="LocalId" type="integer"/>
+			<element name="XMLWrapped" type="boolean" minOccurs="0">
+				<annotation>
+					<documentation>
+						If this externally stored body part is wrapped in an XML envelope then this element must be present and have a value of true.
+						If the externally stored body part is stored as a "native" file without any XML wrapper then either this element will
+						not be present or will be present and have a value of false.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="XMLHash" type="xm:hash-type" minOccurs="0">
+				<annotation>
+					<documentation>
+						The results of some hash function computed on the entire contents of the
+						external XML file.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="XMLSize" type="long" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH 2022-11-30 This is the size of the external XML file, counting the same bytes that were used to calculate the Hash.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Eol" type="xm:eol-type" minOccurs="0"/>
+			<element name="Hash" type="xm:hash-type" minOccurs="0">
+				<annotation>
+					<documentation>
+						The results of some hash function computed on the entire contents of the
+						unwrapped external file.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Size" type="long" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH 2022-11-30 This is the size of the external unwrapped file, counting the same bytes that were used to calculate the Hash.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="ImageProperties" type="xm:image-props" minOccurs="0"/>
+		</sequence>
+	</complexType>
+
+	<group name="message-headers">
+		<annotation>
+			<documentation>
+				These are the headers that can be used for a top-level message or for a child message.
+				Top-level messages should have the "From", "Date", and at least one destination header ("To" "Cc", or "Bcc");
+				child messages should have at least one of "From", "Subject", or "Date".
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="OrigDate" type="dateTime" minOccurs="0"/>
+			<element name="From" type="xm:address" minOccurs="0" />
+			<element name="Sender" type="xm:name-address" minOccurs="0"/>
+			<element name="To" type="xm:address" minOccurs="0" />
+			<element name="Cc" type="xm:address" minOccurs="0" />
+			<element name="Bcc" type="xm:address" minOccurs="0" />
+			<element name="InReplyTo" type="string" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="References" type="string" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Subject" type="string" minOccurs="0"/>
+			<element name="Comments" type="string" minOccurs="0" maxOccurs="unbounded"/>
+			<element name="Keywords" type="string" minOccurs="0" maxOccurs="unbounded"/>
+		</sequence>
+	</group>
+
+	<complexType name="address">
+		<annotation>
+			<documentation>
+				TGH 2022-11-29 An address may be a simple mailbox address or a group of mailbox addresses, see https://www.rfc-editor.org/rfc/rfc5322#section-3.4
+			</documentation>
+		</annotation>
+		<choice maxOccurs="unbounded">
+			<element name="Mailbox" type="xm:name-address"/>
+			<element name="Group" type="xm:group"/>
+		</choice>
+	</complexType>
+
+	<complexType name="name-address">
+		<annotation>
+			<documentation>
+				TGH 2022-11-28 An email address may contain a name and an address, like ["Name" &lt;address@sample.org&gt;].
+				These are separated into attributes to make it easier to access each when needed for formatting or display.  The original combined value is also preserved in the text of the element.
+			</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="string">
+				<attribute name="name" type="string" use="optional"/>
+				<attribute name="address" type="string" use="optional"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="group">
+		<annotation>
+			<documentation>
+				TGH 2022-11-29 A group of addresses, see https://www.rfc-editor.org/rfc/rfc5322#section-3.4
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="Name" type="string"/>
+			<choice minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>
+						A group may not contain any addresses
+					</documentation>
+				</annotation>
+				<element name="Mailbox" type="xm:name-address"/>
+				<element name="Group" type="xm:group">
+					<annotation>
+						<documentation>
+							Groups should not be nested acording to the RFC, but this is reported to happen in the wild.
+						</documentation>
+					</annotation>
+				</element>
+			</choice>
+		</sequence>
+	</complexType>
+
+	<simpleType name="message-status-flag">
+		<restriction base="string">
+			<enumeration value="Seen"/>
+			<enumeration value="Answered"/>
+			<enumeration value="Flagged"/>
+			<enumeration value="Deleted"/>
+			<enumeration value="Draft"/>
+			<enumeration value="Recent"/>
+		</restriction>
+	</simpleType>
+
+	<complexType name="header-type">
+		<annotation>
+			<documentation>
+				HeaderType is used to contain the contents of a single header
+				the child element name stores the name of the header, while
+				the child element value stores the contents of the header.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="Name" type="string"/>
+			<element name="Value" type="string"/>
+			<element name="Comments" type="string" minOccurs="0"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="parameter-type">
+		<sequence>
+			<element name="Name" type="string"/>
+			<element name="Value" type="string"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="incomplete-parse-type">
+		<sequence>
+			<element name="ErrorType" type="string"/>
+			<element name="ErrorLocation" type="string" minOccurs="0"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="file-props-type">
+		<sequence>
+			<element name="RelPath" type="string"  minOccurs="0">
+				<annotation>
+					<documentation>
+						URI component that when added to the path from which this XML file
+						was accessed will give the URI from which the original messages file may be retrieved.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="FileExt" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH_2023-01-19: This is the extension to be used for the source filename.  It should match the actual
+						extension used on the source filename, or if the source filename doesn't have an actual extension, it
+						should be whatever matches the file type. This is used whenever a filename needs to be constructed for
+						the file, such as if the file hash is used as a filename. It must include the leading period.
+					</documentation>
+				</annotation>
+				<simpleType>
+					<restriction base="normalizedString">
+						<pattern value="\.[^\.]+"/><!-- must start with dot, followed by anything not a dot -->
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="ContentType" type="string" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH_2023-09-27: This is the MIME Type of the source filename, 
+						such as 'application/mbox' or 'message/rfc822'.  It is used when embedding the
+						file in the PDF document.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Eol" type="xm:eol-type"/>
+			<element name="Hash" type="xm:hash-type" minOccurs="0"/>
+			<element name="Size" type="long" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH 2023-04-13 This is the size of the mbox file, or the size of an individual message.
+						The size of the message must count the same bytes that were used to calculate the Hash.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Created" type="dateTime" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH 2023-09-19 This is the date/time that the mbox or eml files was created, usually based on the file system property
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Modified" type="dateTime" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH 2023-09-19 This is the date/time that the mbox or eml files was last modified, usually based on the file system property
+					</documentation>
+				</annotation>
+			</element>
+			<element name="MessageCount" type="long" minOccurs="0">
+				<annotation>
+					<documentation>
+						TGH 2023-04-27 This is the number of messages in the mbox file.  It must be the same as the number of messages in the Folder element.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	
+	<simpleType name="MimeType">
+		<restriction base="normalizedString">
+			<pattern value="(application|audio|image|message|multipart|text|video|font|example|model)/[a-z\.\+]+"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType name="eol-type">
+		<restriction base="string">
+			<enumeration value="CR"/>
+			<enumeration value="LF"/>
+			<enumeration value="CRLF"/>
+			<enumeration value="UNKNOWN">
+				<annotation>
+					<documentation>
+						TGH_2022-06-10: The EOL might be unknown if there was an error parsing the mbox file.
+					</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="hash-type">
+		<sequence>
+			<element name="Value" type="hexBinary">
+				<annotation>
+					<documentation>
+						Values of hash-type must be computed by the hash algorithm specified. Please use the canonical form: only upper case letters should be used.)
+					</documentation>
+					<documentation>
+						TGH 2023-04-13
+						If the hash is for a message contained in an MBOX file
+						it must be the result of calculating the hash on the text string
+						that begins with the F of the From_ line and includes the
+						last eol character of the message. All messages end with a
+						single eol marker. Before creating the hash, if the message
+						ends with two or more eol markers, all but the first must
+						be removed. If the message does not end with an eol marker,
+						one must be added.
+
+						TODO: Calculating the hash starting with the first header right after the From_ line would
+						make this a bit more extensible for MIME messages not in mbox files.
+					</documentation>
+				</annotation>
+			</element>
+			<element name="Function" type="xm:hash-function-type"/>
+		</sequence>
+	</complexType>
+
+	<simpleType name="hash-function-type">
+		<restriction base="string">
+			<enumeration value="MD5">
+				<annotation>
+					<documentation>
+						As defined by RFC 1321
+					</documentation>
+				</annotation>
+			</enumeration>
+
+			<enumeration value="WHIRLPOOL">
+				<annotation>
+					<documentation>
+						As adopted by ISO/IEC 10118-3:2004
+					</documentation>
+				</annotation>
+			</enumeration>
+
+			<enumeration value="SHA1">
+				<annotation>
+					<documentation>
+						As defined by NIST FIPS PUB 180-2
+					</documentation>
+				</annotation>
+			</enumeration>
+
+			<enumeration value="SHA224">
+				<annotation>
+					<documentation>
+						As defined by NIST FIPS PUB 180-2
+					</documentation>
+				</annotation>
+			</enumeration>
+
+			<enumeration value="SHA256">
+				<annotation>
+					<documentation>
+						As defined by NIST FIPS PUB 180-2
+					</documentation>
+				</annotation>
+			</enumeration>
+
+			<enumeration value="SHA384">
+				<annotation>
+					<documentation>
+						As defined by NIST FIPS PUB 180-2
+					</documentation>
+				</annotation>
+			</enumeration>
+
+			<enumeration value="SHA512">
+				<annotation>
+					<documentation>
+						As defined by NIST FIPS PUB 180-2
+					</documentation>
+				</annotation>
+			</enumeration>
+
+			<enumeration value="RIPEMD160">
+				<annotation>
+					<documentation>
+						As defined by ISO/IEC 10118-3:2003
+					</documentation>
+				</annotation>
+			</enumeration>
+
+		</restriction>
+	</simpleType>
+	
+
+</schema>
