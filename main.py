@@ -13,9 +13,12 @@ class EmailArchiver(AddOn):
 
     def main(self):
         """The main add-on functionality goes here."""
-        print("Current working directory:")
-        print(os.getcwd())
-        print("Contents:"); print("\n".join(os.listdir()))
+        dotnet_test = "dotnet --info"
+        dotnet_command = "dotnet EaPdfCmd.dll -i /home/runner/work/email-archiver-addon/email-archiver-addon/test.eml -o /home/runner/work/email-archiver-addon/email-archiver-addon -g 'https://example.com'"
+        subprocess.call(dotnet_test, shell=True)
+        #print("Current working directory:")
+        #print(os.getcwd())
+        #print("Contents:"); print("\n".join(os.listdir()))
 
 if __name__ == "__main__":
     EmailArchiver().main()
