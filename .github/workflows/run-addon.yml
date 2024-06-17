@@ -7,4 +7,4 @@ jobs:
     uses: MuckRock/documentcloud-addon-workflows/.github/workflows/run-addon.yml@v1
     with: 
       timeout: 360
-      apt-packages: openjdk-11-jdk dotnet-sdk-6.0.423-1 dotnet-runtime-6.0.31-1
+      apt-packages: openjdk-11-jdk dotnet-sdk-6.0=6.0.423-1 dotnet-runtime-6.0=6.0.31-1
