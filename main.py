@@ -74,13 +74,16 @@ class EmailArchiver(AddOn):
         # print("Contents of output folder:")
         # print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/"))
 
-    def upload_to_documentcloud(self, file_name, access_level, **kwargs):
+    def upload_to_documentcloud(self, file_name, access_level):
         """Uploads PDF files to DocumentCloud"""
         output_folder = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{file_name}/"
         for pdf_file in os.listdir(output_folder):
             if pdf_file.lower().endswith(".pdf") or pdf_file.lower().endswith(".PDF"):
                 file_path = os.path.join(output_folder, pdf_file)
-                kwargs = {}  # Define any additional parameters for DocumentCloud upload
+                if self.data.get("project_id") is not None:
+                    kwargs = {"project": self.data.get("project_id")}
+                else:
+                    kwargs = {}
                 try:
                     self.client.documents.upload(file_path, access_level=access_level, **kwargs)
                     self.set_message(f"Uploaded {pdf_file} to DocumentCloud")
@@ -94,11 +97,6 @@ class EmailArchiver(AddOn):
         self.check_permissions()
         self.fetch_files(url)
         access_level = self.data["access_level"]
-        project_id = self.data.get("project_id")
-        if project_id is not None:
-            kwargs = {"project": project_id}
-        else:
-            kwargs = {}
         os.chdir(
             "out"
         )  # Change context to 'out' directory to look at files we downloaded
@@ -108,7 +106,7 @@ class EmailArchiver(AddOn):
             ):
                 self.set_message(f"Processing file {file_name}")
                 self.eml_to_pdf(file_name, output_url)
-                self.upload_to_documentcloud(file_name, access_level, kwargs)
+                self.upload_to_documentcloud(file_name, access_level)
         os.chdir("/home/runner/work/email-archiver-addon/email-archiver-addon/")
         # Zip up all of the produced documents into an archive available for download
         self.set_message("Zipping up attachments and all produced files for download")
