@@ -57,15 +57,9 @@ class EmailArchiver(AddOn):
 
     def eml_to_pdf(self, file_name, output_url):
         """Uses the eapdf tool on dotnet to do the conversions"""
-        print(os.getcwd())
-        subprocess.call("sudo ln -s /usr/bin/dotnet /usr/local/bin/dotnet", shell=True)
-        dotnet_command = "dotnet EaPdfCmd.dll -i /home/runner/work/email-archiver-addon/email-archiver-addon/test.eml -o /home/runner/work/email-archiver-addon/email-archiver-addon -g 'https://example.com'"
-        subprocess.call(dotnet_command, shell=True)
-
-
-        """os.mkdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/")
+        os.mkdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/")
         dotnet_command = (
-            f"dotnet ./EaPdfCmd_0.2.6-alpha.2/EaPdfCmd.dll "
+            f"dotnet /home/runner/work/email-archiver-addon/email-archiver-addon/EaPdfCmd_0.2.6-alpha.2/EaPdfCmd.dll "
             f"-i /home/runner/work/email-archiver-addon/email-archiver-addon/out/{file_name} "
             f"-o /home/runner/work/email-archiver-addon/email-archiver-addon/output/{file_name}/ "
             f"-g '{output_url}'"
@@ -78,7 +72,7 @@ class EmailArchiver(AddOn):
         except subprocess.CalledProcessError as e:
             print(f"Error running dotnet command: {e}")
         print("Contents of output folder:")
-        print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/"))"""
+        print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/"))
 
     def upload_to_documentcloud(self, file_name, access_level):
         """Uploads PDF files to DocumentCloud"""
