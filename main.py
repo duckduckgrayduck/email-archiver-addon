@@ -4,13 +4,15 @@ This Add-On uses EaPDF to convert emails to a PDF archive
 """
 import os
 import sys
-import glob
 import subprocess
+from urllib.error import HTTPError
 from documentcloud.addon import AddOn
 from clouddl import grab
 
+
 class EmailArchiver(AddOn):
     """An example Add-On for DocumentCloud."""
+
     extract_attachments = False
 
     def check_permissions(self):
@@ -39,10 +41,10 @@ class EmailArchiver(AddOn):
         print("Contents of ./out/ after downloading:")
         print(os.listdir("./out/"))
         os.chdir("out")
-        self.strip_white_spaces(os.getcwd())
+        self.strip_white_spaces()
         os.chdir("..")
 
-    def strip_white_spaces(self, file_path):
+    def strip_white_spaces(self):
         """Strips white space from filename before running it"""
         current_directory = os.getcwd()
         files = os.listdir(current_directory)
@@ -53,7 +55,8 @@ class EmailArchiver(AddOn):
                 os.rename(old_file_path, new_file_path)
                 # print(f"Renamed: {file_name} -> {file_name.strip()}")
 
-    def eml_to_pdf(self,file_name, output_url):
+    def eml_to_pdf(self, file_name, output_url):
+        """Uses the eapdf tool on dotnet to do the conversions"""
         os.mkdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/")
         dotnet_command = (
             f"dotnet ./EaPdfCmd_0.2.6-alpha.2/EaPdfCmd.dll "
@@ -68,18 +71,19 @@ class EmailArchiver(AddOn):
         except subprocess.CalledProcessError as e:
             print(f"Error running dotnet command: {e}")
 
-    def upload_to_documentcloud(self, file_name, access_level, project_id):
+    def upload_to_documentcloud(self, file_name, access_level):
         """Uploads PDF files to DocumentCloud"""
         output_folder = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{file_name}/"
         for pdf_file in os.listdir(output_folder):
-            if pdf_file.lower().endswith(".pdf") OR pdf_file.lower().endswith(".PDF"):
+            if pdf_file.lower().endswith(".pdf") or pdf_file.lower().endswith(".PDF"):
                 file_path = os.path.join(output_folder, pdf_file)
                 kwargs = {}  # Define any additional parameters for DocumentCloud upload
                 try:
-                    self.client.documents.upload(file_path, **kwargs)
+                    self.client.documents.upload(file_path, access_level=access_level)
                     print(f"Uploaded {pdf_file} to DocumentCloud")
                 except Exception as e:
                     print(f"Error uploading {pdf_file} to DocumentCloud: {e}")
+
     def main(self):
         """The main add-on functionality goes here."""
         output_url = self.data.get("email_archive_url")
@@ -90,20 +94,24 @@ class EmailArchiver(AddOn):
         project_id = self.data.get("project_id")
         successes = 0
         errors = 0
-        dotnet_test = "dotnet --info"
-        os.chdir("out")  # Change context to 'out' directory to look at files we downloaded
+        os.chdir(
+            "out"
+        )  # Change context to 'out' directory to look at files we downloaded
         for file_name in os.listdir("."):
-            if file_name.lower().endswith(".eml") or file_name.lower().endswith(".mbox"):
+            if file_name.lower().endswith(".eml") or file_name.lower().endswith(
+                ".mbox"
+            ):
                 print(f"Processing file: {file_name}")
                 self.eml_to_pdf(file_name, output_url)
-                self.upload_to_documentcloud(file_name)
-    
-        #subprocess.call("sudo ln -s /usr/bin/dotnet /usr/local/bin/dotnet", shell=True)
-        #dotnet_command = "dotnet ./EaPdfCmd_0.2.6-alpha.2/EaPdfCmd.dll -i /home/runner/work/email-archiver-addon/email-archiver-addon/test.eml -o /home/runner/work/email-archiver-addon/email-archiver-addon -g 'https://example.com'"
-        #subprocess.call(dotnet_command, shell=True)
-        #print("Current working directory:")
-        #print(os.getcwd())
-        #print("Contents:"); print("\n".join(os.listdir()))
+                self.upload_to_documentcloud(file_name, access_level)
+
+        # subprocess.call("sudo ln -s /usr/bin/dotnet /usr/local/bin/dotnet", shell=True)
+        # dotnet_command = "dotnet ./EaPdfCmd_0.2.6-alpha.2/EaPdfCmd.dll -i /home/runner/work/email-archiver-addon/email-archiver-addon/test.eml -o /home/runner/work/email-archiver-addon/email-archiver-addon -g 'https://example.com'"
+        # subprocess.call(dotnet_command, shell=True)
+        # print("Current working directory:")
+        # print(os.getcwd())
+        # print("Contents:"); print("\n".join(os.listdir()))
+
 
 if __name__ == "__main__":
     EmailArchiver().main()
