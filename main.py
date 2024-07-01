@@ -57,7 +57,7 @@ class EmailArchiver(AddOn):
 
     def eml_to_pdf(self, file_name, output_url):
         """Uses the eapdf tool on dotnet to do the conversions"""
-        os.chdir("EaPdfCmd_0.2.6-alpha.2")
+        print(os.getcwd())
         subprocess.call("sudo ln -s /usr/bin/dotnet /usr/local/bin/dotnet", shell=True)
         dotnet_command = "dotnet EaPdfCmd.dll -i /home/runner/work/email-archiver-addon/email-archiver-addon/test.eml -o /home/runner/work/email-archiver-addon/email-archiver-addon -g 'https://example.com'"
         subprocess.call(dotnet_command, shell=True)
