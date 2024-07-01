@@ -60,13 +60,14 @@ class EmailArchiver(AddOn):
         os.mkdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/")
         dotnet_command = (
             f"dotnet ./EaPdfCmd_0.2.6-alpha.2/EaPdfCmd.dll "
-            f"-i /home/runner/work/email-archiver-addon/email-archiver-addon/out/{file_name}"
-            f"-o /home/runner/work/email-archiver-addon/email-archiver-addon/output/{file_name}/"
+            f"-i /home/runner/work/email-archiver-addon/email-archiver-addon/out/{file_name} "
+            f"-o /home/runner/work/email-archiver-addon/email-archiver-addon/output/{file_name}/ "
             f"-g '{output_url}'"
         )
 
         # Execute the dotnet command using subprocess.call
         try:
+            subprocess.call("sudo ln -s /usr/bin/dotnet /usr/local/bin/dotnet", shell=True)
             subprocess.call(dotnet_command, shell=True)
         except subprocess.CalledProcessError as e:
             print(f"Error running dotnet command: {e}")
