@@ -38,10 +38,10 @@ class EmailArchiver(AddOn):
             )
             print(f"HTTP Error: {http_error}")
             sys.exit(0)
-        print("Contents of ./out/ after downloading:")
-        print(os.listdir("./out/"))
         os.chdir("out")
         self.strip_white_spaces()
+        print("Contents of ./out/ after downloading:")
+        print(os.listdir("."))
         os.chdir("..")
 
     def strip_white_spaces(self):
