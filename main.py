@@ -74,7 +74,7 @@ class EmailArchiver(AddOn):
         # print("Contents of output folder:")
         # print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/"))
 
-    def upload_to_documentcloud(self, file_name, access_level):
+    def upload_to_documentcloud(self, file_name, access_level, **kwargs):
         """Uploads PDF files to DocumentCloud"""
         output_folder = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{file_name}/"
         for pdf_file in os.listdir(output_folder):
@@ -82,7 +82,7 @@ class EmailArchiver(AddOn):
                 file_path = os.path.join(output_folder, pdf_file)
                 kwargs = {}  # Define any additional parameters for DocumentCloud upload
                 try:
-                    self.client.documents.upload(file_path, access_level=access_level)
+                    self.client.documents.upload(file_path, access_level=access_level, **kwargs)
                     self.set_message(f"Uploaded {pdf_file} to DocumentCloud")
                 except Exception as e:
                     print(f"Error uploading {pdf_file} to DocumentCloud: {e}")
@@ -108,7 +108,7 @@ class EmailArchiver(AddOn):
             ):
                 self.set_message(f"Processing file {file_name}")
                 self.eml_to_pdf(file_name, output_url)
-                self.upload_to_documentcloud(file_name, access_level, **kwargs)
+                self.upload_to_documentcloud(file_name, access_level, kwargs)
         os.chdir("/home/runner/work/email-archiver-addon/email-archiver-addon/")
         # Zip up all of the produced documents into an archive available for download
         self.set_message("Zipping up attachments and all produced files for download")
