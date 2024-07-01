@@ -3,9 +3,30 @@ description: Test Add-On that uses EaPDF to convert emails to an archived PDF fo
 instructions: ''
 type: object
 properties:
-  name:
-    title: Name
+  email_archive_url:
+    title: Email Archive Identifier
     type: string
+    description: Unique, permanent, absolute URI identifying the email archive
+  url:
+    title: URL
+    type: string
+    format: uri
+    description: A publicly accessible Google Drive or Dropbox folder or file. 
+  access_level:
+    title: Access level for uploaded documents
+    type: string
+    default: private
+    enum:
+      - private
+      - organization
+      - public
+  project_id:
+    title: Project ID
+    type: integer
+    description: Project ID of the project you would like to upload the documents to. 
+required: 
+  - url
+  - email_archive_url
 categories: 
   - file
 version: 2
