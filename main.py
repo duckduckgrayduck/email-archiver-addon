@@ -95,8 +95,10 @@ class EmailArchiver(AddOn):
         self.fetch_files(url)
         access_level = self.data["access_level"]
         project_id = self.data.get("project_id")
-        successes = 0
-        errors = 0
+        if project_id is not None:
+            kwargs = {"project": project_id}
+        else:
+            kwargs = {}
         os.chdir(
             "out"
         )  # Change context to 'out' directory to look at files we downloaded
@@ -106,7 +108,7 @@ class EmailArchiver(AddOn):
             ):
                 self.set_message(f"Processing file {file_name}")
                 self.eml_to_pdf(file_name, output_url)
-                self.upload_to_documentcloud(file_name, access_level)
+                self.upload_to_documentcloud(file_name, access_level, **kwargs)
         os.chdir("/home/runner/work/email-archiver-addon/email-archiver-addon/")
         # Zip up all of the produced documents into an archive available for download
         self.set_message("Zipping up attachments and all produced files for download")
