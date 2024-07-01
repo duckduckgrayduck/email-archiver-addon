@@ -107,9 +107,9 @@ class EmailArchiver(AddOn):
                 print(f"Processing file: {file_name}")
                 self.eml_to_pdf(file_name, output_url)
                 self.upload_to_documentcloud(file_name, access_level)
-
+        os.chdir("/home/runner/work/email-archiver-addon/email-archiver-addon/")
         # Zip up all of the produced documents into an archive available for download
-        subprocess.call("zip -q -r all_files.zip /home/runner/work/email-archiver-addon/email-archiver-addon/output ", shell=True)
+        subprocess.call("zip -q -r all_files.zip ./output ", shell=True)
         self.upload_file(open("all_files.zip"))
 
 if __name__ == "__main__":
