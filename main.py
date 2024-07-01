@@ -108,13 +108,9 @@ class EmailArchiver(AddOn):
                 self.eml_to_pdf(file_name, output_url)
                 self.upload_to_documentcloud(file_name, access_level)
 
-        # subprocess.call("sudo ln -s /usr/bin/dotnet /usr/local/bin/dotnet", shell=True)
-        # dotnet_command = "dotnet ./EaPdfCmd_0.2.6-alpha.2/EaPdfCmd.dll -i /home/runner/work/email-archiver-addon/email-archiver-addon/test.eml -o /home/runner/work/email-archiver-addon/email-archiver-addon -g 'https://example.com'"
-        # subprocess.call(dotnet_command, shell=True)
-        # print("Current working directory:")
-        # print(os.getcwd())
-        # print("Contents:"); print("\n".join(os.listdir()))
-
+        # Zip up all of the produced documents into an archive available for download
+        subprocess.call("zip -q -r all_files.zip /home/runner/work/email-archiver-addon/email-archiver-addon/output ", shell=True)
+        self.upload_file(open("all_files.zip"))
 
 if __name__ == "__main__":
     EmailArchiver().main()
