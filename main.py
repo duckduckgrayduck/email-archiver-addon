@@ -71,8 +71,8 @@ class EmailArchiver(AddOn):
             subprocess.call(dotnet_command, shell=True)
         except subprocess.CalledProcessError as e:
             print(f"Error running dotnet command: {e}")
-        print("Contents of output folder:")
-        print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/"))
+        # print("Contents of output folder:")
+        # print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/"))
 
     def upload_to_documentcloud(self, file_name, access_level):
         """Uploads PDF files to DocumentCloud"""
@@ -83,7 +83,7 @@ class EmailArchiver(AddOn):
                 kwargs = {}  # Define any additional parameters for DocumentCloud upload
                 try:
                     self.client.documents.upload(file_path, access_level=access_level)
-                    print(f"Uploaded {pdf_file} to DocumentCloud")
+                    self.set_message(f"Uploaded {pdf_file} to DocumentCloud")
                 except Exception as e:
                     print(f"Error uploading {pdf_file} to DocumentCloud: {e}")
 
@@ -104,12 +104,14 @@ class EmailArchiver(AddOn):
             if file_name.lower().endswith(".eml") or file_name.lower().endswith(
                 ".mbox"
             ):
-                print(f"Processing file: {file_name}")
+                self.set_message(f"Processing file {file_name}")
                 self.eml_to_pdf(file_name, output_url)
                 self.upload_to_documentcloud(file_name, access_level)
         os.chdir("/home/runner/work/email-archiver-addon/email-archiver-addon/")
         # Zip up all of the produced documents into an archive available for download
+        self.set_message("Zipping up attachments and all produced files for download")
         subprocess.call("zip -q -r all_files.zip ./output ", shell=True)
+        self.set_message("Attachments and other produced files are ready for download.")
         self.upload_file(open("all_files.zip"))
 
 if __name__ == "__main__":
