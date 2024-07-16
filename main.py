@@ -79,13 +79,19 @@ class EmailArchiver(AddOn):
         """Uploads PDF files to DocumentCloud"""
         base_name = os.path.splitext(os.path.basename(file_name))[0]
         output_folder = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{base_name}/"
+        csv_file = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{base_name}/{base_name}.csv"
+        metadata = {}
+        with open(csv_file, 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csvfile.DictReader(csvfile)
+            for row in reader:
+                for key, value in row.items():
+                    metadata[key] = value
         for pdf_file in os.listdir(output_folder):
-            if pdf_file.lower().endswith(".pdf") or pdf_file.lower().endswith(".PDF"):
+            if pdf_file.lower().endswith(".pdf"):
                 file_path = os.path.join(output_folder, pdf_file)
+                kwargs = {"data": metadata}
                 if self.data.get("project_id") is not None:
-                    kwargs = {"project": self.data.get("project_id")}
-                else:
-                    kwargs = {}
+                    kwargs["project"] = self.data.get("project_id")
                 try:
                     self.client.documents.upload(file_path, access_level=access_level, **kwargs)
                     self.set_message(f"Uploaded {pdf_file} to DocumentCloud")
@@ -114,7 +120,7 @@ class EmailArchiver(AddOn):
         self.set_message("Zipping up attachments and all produced files for download")
         subprocess.call("zip -q -r all_files.zip ./output ", shell=True)
         self.set_message("Attachments and other produced files are ready for download.")
-        self.upload_file(open("all_files.zip"))
+        self.upload_file(open("all_files.zip", encoding='utf-8'))
 
 if __name__ == "__main__":
     EmailArchiver().main()
