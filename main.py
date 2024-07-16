@@ -3,6 +3,7 @@ This Add-On uses EaPDF to convert emails to a PDF archive
 
 """
 import os
+import csv
 import sys
 import subprocess
 from urllib.error import HTTPError
@@ -82,7 +83,7 @@ class EmailArchiver(AddOn):
         csv_file = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{base_name}/{base_name}.csv"
         metadata = {}
         with open(csv_file, 'r', newline='', encoding='utf-8') as csvfile:
-            reader = csvfile.DictReader(csvfile)
+            reader = csv.DictReader(csvfile)
             for row in reader:
                 for key, value in row.items():
                     metadata[key] = value
