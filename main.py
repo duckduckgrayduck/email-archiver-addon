@@ -77,7 +77,8 @@ class EmailArchiver(AddOn):
 
     def upload_to_documentcloud(self, file_name, access_level):
         """Uploads PDF files to DocumentCloud"""
-        output_folder = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{file_name}/"
+        base_name = os.path.splitext(os.path.basename(file_name))[0]
+        output_folder = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{base_name}/"
         for pdf_file in os.listdir(output_folder):
             if pdf_file.lower().endswith(".pdf") or pdf_file.lower().endswith(".PDF"):
                 file_path = os.path.join(output_folder, pdf_file)
