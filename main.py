@@ -86,7 +86,8 @@ class EmailArchiver(AddOn):
             reader = csv.DictReader(csvfile)
             for row in reader:
                 for key, value in row.items():
-                    metadata[key] = value
+                    stripped_key = key.replace(" ", "")
+                    metadata[stripped_key] = value
         for pdf_file in os.listdir(output_folder):
             if pdf_file.lower().endswith(".pdf"):
                 file_path = os.path.join(output_folder, pdf_file)
