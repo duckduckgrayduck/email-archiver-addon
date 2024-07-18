@@ -1,5 +1,5 @@
 title: Email Archiver
-description: Convert EML and MBOX files to a metadata preserving archive-friendly PDF format using EAPdf. 
+description: Convert EML and MBOX files to a metadata preserving PDF format [EA-PDF](https://pdfa.org/resource/ea-pdf/) using [Email2Pdf](https://github.com/UIUCLibrary/ea-pdf). 
 instructions: 'Attachments are compressed and offered for download at the end of the run. The Add-On also saves metadata about the email as key value pairs on the document.'
 type: object
 properties:
