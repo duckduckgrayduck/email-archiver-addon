@@ -1,6 +1,6 @@
 title: Email Archiver
-description: Test Add-On that uses EaPDF to convert emails to an archived PDF format. 
-instructions: ''
+description: Convert EML and MBOX files to a metadata preserving archive-friendly PDF format using EAPdf. 
+instructions: 'Attachments are compressed and offered for download at the end of the run. The Add-On also saves metadata about the email as key value pairs on the document.'
 type: object
 properties:
   email_archive_url:
