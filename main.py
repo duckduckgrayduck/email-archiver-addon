@@ -73,8 +73,8 @@ class EmailArchiver(AddOn):
             subprocess.call(dotnet_command, shell=True)
         except subprocess.CalledProcessError as e:
             print(f"Error running dotnet command: {e}")
-        print("Contents of email archiver addon directory:")
-        print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/"))
+        print("Contents of out directory after conversion")
+        print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/out/"))
 
     def upload_to_documentcloud(self, file_name, access_level):
         """Uploads PDF files to DocumentCloud"""
