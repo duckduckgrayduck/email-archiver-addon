@@ -73,14 +73,14 @@ class EmailArchiver(AddOn):
             subprocess.call(dotnet_command, shell=True)
         except subprocess.CalledProcessError as e:
             print(f"Error running dotnet command: {e}")
-        print("Contents of output folder:")
-        print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/"))
+        print("Contents of email archiver addon directory:")
+        print(os.listdir("/home/runner/work/email-archiver-addon/email-archiver-addon/"))
 
     def upload_to_documentcloud(self, file_name, access_level):
         """Uploads PDF files to DocumentCloud"""
         base_name = os.path.splitext(os.path.basename(file_name))[0]
-        output_folder = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{base_name}/"
-        csv_file = f"/home/runner/work/email-archiver-addon/email-archiver-addon/output/{base_name}/{base_name}.csv"
+        output_folder = f"/home/runner/work/email-archiver-addon/email-archiver-addon/{base_name}/"
+        csv_file = f"/home/runner/work/email-archiver-addon/email-archiver-addon/{base_name}/{base_name}.csv"
         metadata = {}
         with open(csv_file, 'r', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
