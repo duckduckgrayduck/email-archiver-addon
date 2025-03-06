@@ -5,7 +5,7 @@ type: object
 properties:
   email_archive_url:
     title: Email Archive Identifier
-    type: string
+    type: uri
     description: Unique, permanent, absolute URI identifying the email archive
   url:
     title: URL
