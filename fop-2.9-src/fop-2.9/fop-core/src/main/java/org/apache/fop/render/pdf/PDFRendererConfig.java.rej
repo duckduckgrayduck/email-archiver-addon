@@ -1,0 +1,10 @@
+--- fop-core/src/main/java/org/apache/fop/render/pdf/PDFRendererConfig.java
++++ fop-core/src/main/java/org/apache/fop/render/pdf/PDFRendererConfig.java
+@@ -61,6 +61,7 @@ import static org.apache.fop.render.pdf.PDFRendererOption.FILTER_LIST;
+ import static org.apache.fop.render.pdf.PDFRendererOption.FORM_XOBJECT;
+ import static org.apache.fop.render.pdf.PDFRendererOption.LINEARIZATION;
+ import static org.apache.fop.render.pdf.PDFRendererOption.MERGE_FONTS;
++import static org.apache.fop.render.pdf.PDFRendererOption.MERGE_FORM_FIELDS;
+ import static org.apache.fop.render.pdf.PDFRendererOption.NEED_APPEARANCES;
+ import static org.apache.fop.render.pdf.PDFRendererOption.OUTPUT_PROFILE;
+ import static org.apache.fop.render.pdf.PDFRendererOption.PDF_A_MODE;

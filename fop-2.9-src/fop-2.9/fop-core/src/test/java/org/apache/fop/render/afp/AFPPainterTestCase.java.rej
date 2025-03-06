@@ -1,0 +1,10 @@
+--- fop-core/src/test/java/org/apache/fop/render/afp/AFPPainterTestCase.java
++++ fop-core/src/test/java/org/apache/fop/render/afp/AFPPainterTestCase.java
+@@ -74,6 +73,7 @@ import org.apache.fop.afp.fonts.RasterFont;
+ import org.apache.fop.afp.ioca.ImageContent;
+ import org.apache.fop.afp.parser.MODCAParser;
+ import org.apache.fop.afp.parser.UnparsedStructuredField;
++import org.apache.fop.afp.ptoca.PtocaConstants;
+ import org.apache.fop.apps.FOUserAgent;
+ import org.apache.fop.apps.FopFactory;
+ import org.apache.fop.events.Event;

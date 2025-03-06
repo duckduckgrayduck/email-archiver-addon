@@ -1,0 +1,11 @@
+--- fop-core/src/main/java/org/apache/fop/pdf/PDFPage.java
++++ fop-core/src/main/java/org/apache/fop/pdf/PDFPage.java
+@@ -187,4 +187,8 @@ public class PDFPage extends PDFResourceContext {
+         PDFName type = (PDFName) get("Type");
+         return "Template".equals(type.getName());
+     }
++
++    public void setMetadata(PDFMetadata meta) {
++        put("Metadata", meta.makeReference());
++    }
+ }

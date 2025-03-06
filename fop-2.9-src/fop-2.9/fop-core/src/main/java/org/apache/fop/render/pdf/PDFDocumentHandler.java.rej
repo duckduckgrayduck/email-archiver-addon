@@ -1,0 +1,40 @@
+--- fop-core/src/main/java/org/apache/fop/render/pdf/PDFDocumentHandler.java
++++ fop-core/src/main/java/org/apache/fop/render/pdf/PDFDocumentHandler.java
+@@ -26,10 +26,8 @@ import java.awt.geom.Point2D;
+ import java.awt.geom.Rectangle2D;
+ import java.awt.geom.Rectangle2D.Double;
+ import java.io.IOException;
+-import java.util.ArrayList;
+ import java.util.HashMap;
+ import java.util.LinkedList;
+-import java.util.List;
+ import java.util.Locale;
+ import java.util.Map;
+ 
+@@ -106,7 +104,7 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
+ 
+     private LinkedList endDocumentListeners;
+ 
+-    private List<String> usedFieldNames;
++    private Map<String, Object> usedFieldNames;
+     private Map<Integer, PDFArray> pageNumbers = new HashMap<Integer, PDFArray>();
+     private Map<String, PDFReference> contents = new HashMap<String, PDFReference>();
+     private Map<String, RadioButton.RadioButtonBuilder> radioButtonBuilders;
+@@ -117,7 +115,7 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
+     public PDFDocumentHandler(IFContext context) {
+         super(context);
+         this.pdfUtil = new PDFRenderingUtil(context.getUserAgent());
+-        usedFieldNames = new ArrayList<String>();
++        usedFieldNames = new HashMap<>();
+     }
+ 
+     /** {@inheritDoc} */
+@@ -428,7 +426,7 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
+         return structureTreeBuilder;
+     }
+ 
+-    public List<String> getUsedFieldNames() {
++    public Map<String, Object> getUsedFieldNames() {
+         return usedFieldNames;
+     }
+ 

@@ -1,0 +1,13 @@
+--- fop-core/src/main/java/org/apache/fop/layoutmgr/AbstractLayoutManager.java
++++ fop-core/src/main/java/org/apache/fop/layoutmgr/AbstractLayoutManager.java
+@@ -327,7 +327,9 @@ public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager im
+      * @return True if it is the first Position
+      */
+     public boolean isFirst(Position pos) {
+-        //LOG.trace("isFirst() smallestPosNumberChecked=" + smallestPosNumberChecked + " " + pos);
++        if (pos == null) {
++            return false;
++        }
+         verifyNonNullPosition(pos);
+         if (pos.getIndex() == this.smallestPosNumberChecked) {
+             return true;

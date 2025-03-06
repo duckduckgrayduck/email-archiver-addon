@@ -1,0 +1,33 @@
+--- fop-core/src/main/java/org/apache/fop/render/pdf/PDFRenderingContext.java
++++ fop-core/src/main/java/org/apache/fop/render/pdf/PDFRenderingContext.java
+@@ -19,7 +19,6 @@
+ 
+ package org.apache.fop.render.pdf;
+ 
+-import java.util.List;
+ import java.util.Map;
+ 
+ import org.apache.xmlgraphics.util.MimeConstants;
+@@ -41,7 +40,7 @@ public class PDFRenderingContext extends AbstractRenderingContext {
+     private FontInfo fontInfo;
+     private PDFPage page;
+     private MarkedContentInfo mci;
+-    private List<String> usedFieldNames;
++    private Map<String, Object> usedFieldNames;
+     private Map<Integer, PDFArray> pageNumbers;
+     private PDFLogicalStructureHandler pdfLogicalStructureHandler;
+     private PDFStructElem currentSessionStructElem;
+@@ -99,11 +98,11 @@ public class PDFRenderingContext extends AbstractRenderingContext {
+         return mci;
+     }
+ 
+-    public List<String> getUsedFieldNames() {
++    public Map<String, Object> getUsedFieldNames() {
+         return usedFieldNames;
+     }
+ 
+-    public void setUsedFieldNames(List<String> usedFieldNames) {
++    public void setUsedFieldNames(Map<String, Object> usedFieldNames) {
+         this.usedFieldNames = usedFieldNames;
+     }
+ 
