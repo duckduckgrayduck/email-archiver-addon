@@ -61,7 +61,7 @@ class EmailArchiver(AddOn):
         os.mkdir("/home/runner/work/email-archiver-addon/email-archiver-addon/output/")
         base_name = os.path.splitext(os.path.basename(file_name))[0]
         dotnet_command = (
-            f"dotnet /home/runner/work/email-archiver-addon/email-archiver-addon/EaPdfCmd_0.5.0-beta.2/EaPdfCmd.dll "
+            f"dotnet /home/runner/work/email-archiver-addon/email-archiver-addon/EaPdfCmd_0.2.6-alpha.2/EaPdfCmd.dll "
             f"-i /home/runner/work/email-archiver-addon/email-archiver-addon/out/{file_name} "
             f"-o /home/runner/work/email-archiver-addon/email-archiver-addon/output/{base_name}/ "
             f"-g '{output_url}'"
